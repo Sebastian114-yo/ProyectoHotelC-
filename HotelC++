@@ -1,0 +1,211 @@
+/*
+Jhoan Sebastian Celis Pabon
+Andre Sandoval
+*/
+
+
+#include <iostream>
+#include <map>
+#include <vector>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+void habitacionesdisponibles(int habitacionsimple, int habitacionmatrimonial, int habitacionfamiliar, int valorhabiatacionsimple, int valorhabitacionMatrimonial, int valorhabitacionFamiliar) {
+    cout << endl << "- TIPOS DE HABITACIONES - ";
+    cout << endl << "1. Habitacion Simple. (Dos camas) DISPONIBLES, PRECIO(" << valorhabiatacionsimple << ") = " << habitacionsimple;
+    cout << endl << "2. Habitacion Matrimonial. (Una cama doble) DISPONIBLES, PRECIO(" << valorhabitacionMatrimonial << ") = " << habitacionmatrimonial;
+    cout << endl << "3. Habitacion Familiar. (Dos literas = cuatro camas) DISPONIBLES, PRECIO(" << valorhabitacionFamiliar << ") = " << habitacionfamiliar;
+    cout << endl << "  " << endl;
+}
+
+void agregarreserva(char& opcionreserva, int& habitacionsimple, int& habitacionmatrimonial, int& habitacionfamiliar, string& reserva_tipo) {
+    do {
+        cout << endl << "- TIPOS DE HABITACIONES - ";
+        cout << endl << "1. Habitacion Simple. (Dos camas) DISPONIBLES = " << habitacionsimple;
+        cout << endl << "2. Habitacion Matrimonial. (Una cama doble) DISPONIBLES = " << habitacionmatrimonial;
+        cout << endl << "3. Habitacion Familiar. (Dos literas = cuatro camas) DISPONIBLES = " << habitacionfamiliar;
+        cout << endl << "4. Salir" << endl;
+        cout << "INGRESAR NUMERO DE OPCION: ";
+        cin >> opcionreserva;
+    } while (opcionreserva != '1' && opcionreserva != '2' && opcionreserva != '3' && opcionreserva != '4');
+
+    switch (opcionreserva) {
+        case '1':
+            habitacionsimple--;
+            reserva_tipo = "Habitacion Simple";
+            break;
+        case '2':
+            habitacionmatrimonial--;
+            reserva_tipo = "Habitacion Matrimonial";
+            break;
+        case '3':
+            habitacionfamiliar--;
+            reserva_tipo = "Habitacion Familiar";
+            break;
+        case '4':
+            return;
+        default:
+            cout << "OPCION NO VALIDA" << endl;
+            break;
+    }
+}
+
+void datoscliente(string& nombrecliente, map<string, string>& DatosUsuario, map<string, string>& DatosUsuario2, const string& reserva_tipo, int valorhabiatacionsimple, int valorhabitacionMatrimonial, int valorhabitacionFamiliar) {
+    string FechaIngreso, FechaReservacion;
+    int DiasDeHospedaje;
+
+    cout << endl << "INGRESAR NOMBRE DEL CLIENTE: ";
+    cin >> nombrecliente;
+    cout << endl << "FECHA DE LA RESERVACION: ";
+    cin >> FechaReservacion;
+    cout << endl << "INGRESAR FECHA DE INGRESO: ";
+    cin >> FechaIngreso;
+    cout << endl << "DIAS DE HOSPEDAJE: ";
+    cin >> DiasDeHospedaje;
+
+    int precioreservacion = 0;
+    if (reserva_tipo == "Habitacion Simple") {
+        precioreservacion = DiasDeHospedaje * valorhabiatacionsimple;
+    } else if (reserva_tipo == "Habitacion Matrimonial") {
+        precioreservacion = DiasDeHospedaje * valorhabitacionMatrimonial;
+    } else if (reserva_tipo == "Habitacion Familiar") {
+        precioreservacion = DiasDeHospedaje * valorhabitacionFamiliar;
+    }
+
+    string valorHospedaje = "TOTAL A PAGAR(" + to_string(precioreservacion) + ")";
+    string claveReservacion = reserva_tipo + " - " + nombrecliente;
+    string DatosReservacion = "CLIENTE(" + nombrecliente + "), FECHA DE LA RESERVACION(" + FechaReservacion + "), " + valorHospedaje + ")";
+
+    DatosUsuario[claveReservacion] = DatosReservacion;
+    DatosUsuario2[nombrecliente] = reserva_tipo;
+
+    cout << endl << "--RESERVACION EXITOSA--";
+    cout << endl << "RESERVACION DE " << nombrecliente << ": FECHA DE LA RESERVACION(" << FechaReservacion << "), " << valorHospedaje << endl;
+}
+
+void mostrarreservas(const map<string, string>& DatosUsuario) {
+    cout << endl << "RESERVACIONES ACTUALES" << endl;
+    int contador = 1;
+    for (const auto& par : DatosUsuario) {
+        cout << contador << ". " << par.first << " : " << par.second << endl;
+        contador++;
+    }
+}
+
+void cancelarreservas(map<string, string>& DatosUsuario, map<string, string>& DatosUsuario2, int& habitacionsimple, int& habitacionmatrimonial, int& habitacionfamiliar) {
+    int contador = 1;
+    int numero;
+
+    for (const auto& par : DatosUsuario2) {
+        cout << contador << ". " << par.first << " : " << par.second << endl;
+        contador++;
+    }
+
+    cout << "INGRESE EL NUMERO DE LA RESERVACION QUE QUIERE CANCELAR: ";
+    cin >> numero;
+    if (numero >= 1 && numero <= DatosUsuario2.size()) {
+        auto iter = DatosUsuario2.begin();
+        advance(iter, numero - 1);
+        string nombrecliente = iter->first;
+        string tipo_habitacion = iter->second;
+
+        // Eliminar la reserva del diccionario DatosUsuario
+        for (auto it = DatosUsuario.begin(); it != DatosUsuario.end(); ++it) {
+            if (it->first.find(nombrecliente) != string::npos) {
+                DatosUsuario.erase(it);
+                break;
+            }
+        }
+
+        // Ajustar las habitaciones disponibles según el tipo de habitación cancelada
+        if (tipo_habitacion == "Habitacion Simple") {
+            habitacionsimple++;
+        } else if (tipo_habitacion == "Habitacion Matrimonial") {
+            habitacionmatrimonial++;
+        } else if (tipo_habitacion == "Habitacion Familiar") {
+            habitacionfamiliar++;
+        }
+
+        // Eliminar la reserva del diccionario DatosUsuario2
+        DatosUsuario2.erase(nombrecliente);
+
+        cout << endl << "RESERVA CANCELADA CORRECTAMENTE" << endl;
+    } else {
+        cout << endl << "ERROR, NUMERO NO VALIDO" << endl;
+    }
+}
+
+void GuardarDatos(char opcionmenu, char opcionreserva, int habitacionsimple, int habitacionmatrimonial, int habitacionfamiliar, string reserva_tipo, string nombrecliente, const map<string, string>& DatosUsuario) {
+    ofstream datosPrograma("datos.txt", ios::out);
+    if (datosPrograma.is_open()) {
+        for (const auto& par : DatosUsuario) {
+            datosPrograma << par.first << " : " << par.second << endl;
+        }
+        datosPrograma << "Valor variable 'opcionmenu': " << opcionmenu << endl;
+        datosPrograma << "Valor variable 'opcionreserva': " << opcionreserva << endl;
+        datosPrograma << "Valor variable 'habitacionsimple': " << habitacionsimple << endl;
+        datosPrograma << "Valor variable 'habitacionmatrimonial': " << habitacionmatrimonial << endl;
+        datosPrograma << "Valor variable 'habitacionfamiliar': " << habitacionfamiliar << endl;
+        datosPrograma << "Valor variable 'reserva_tipo': " << reserva_tipo << endl;
+        datosPrograma << "Valor variable 'nombrecliente': " << nombrecliente << endl;
+    } else {
+        cout << "***NO SE PUDO ABRIR EL ARCHIVO***" << endl;
+    }
+}
+
+int main() {
+    char opcionmenu{};
+    char opcionreserva{};
+    int habitacionsimple = 5;
+    int habitacionmatrimonial = 5;
+    int habitacionfamiliar = 5;
+    string reserva_tipo;
+    string nombrecliente;
+    map<string, string> DatosUsuario;
+    map<string, string> DatosUsuario2;
+    int valorhabiatacionsimple = 1000;  
+    int valorhabitacionMatrimonial = 1800; 
+    int valorhabitacionFamiliar = 3500;
+
+    int contador = 0;
+    while (contador == 0) {
+        cout << endl << "- BIENVENIDO -" << endl;
+        do {
+            cout << "-OPCIONES (ingrese un numero entre el 1 y el 5)-" << endl;
+            cout << "1. Mostrar habitaciones disponibles" << endl;
+            cout << "2. Agregar reservacion" << endl;
+            cout << "3. Cancelar reservacion" << endl;
+            cout << "4. Mostrar reservaciones" << endl;
+            cout << "5. Salir" << endl;
+            cout << "INGRESAR NUMERO DE OPCION: "; cin >> opcionmenu;
+            cout << " " << endl;
+        } while (opcionmenu != '1' && opcionmenu != '2' && opcionmenu != '3' && opcionmenu != '4' && opcionmenu != '5');
+
+        switch (opcionmenu) {
+            case '1':
+                habitacionesdisponibles(habitacionsimple, habitacionmatrimonial, habitacionfamiliar, valorhabiatacionsimple, valorhabitacionMatrimonial, valorhabitacionFamiliar);
+                break;
+            case '2':
+                agregarreserva(opcionreserva, habitacionsimple, habitacionmatrimonial, habitacionfamiliar, reserva_tipo);
+                if (opcionreserva != '4') {
+                    datoscliente(nombrecliente, DatosUsuario, DatosUsuario2, reserva_tipo, valorhabiatacionsimple, valorhabitacionMatrimonial, valorhabitacionFamiliar);
+                }
+                break;
+            case '3':
+                cancelarreservas(DatosUsuario, DatosUsuario2, habitacionsimple, habitacionmatrimonial, habitacionfamiliar);
+                break;
+            case '4':
+                mostrarreservas(DatosUsuario);
+                break;
+            case '5':
+                GuardarDatos(opcionmenu, opcionreserva, habitacionsimple, habitacionmatrimonial, habitacionfamiliar, reserva_tipo, nombrecliente, DatosUsuario);
+                contador++;
+                break;
+            default:
+                break;
+        }
+    }
+    return 0;
+}
