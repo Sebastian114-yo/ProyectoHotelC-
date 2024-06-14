@@ -13,10 +13,10 @@ Andre Sandoval
 using namespace std;
 
 void habitacionesdisponibles(int habitacionsimple, int habitacionmatrimonial, int habitacionfamiliar, int valorhabiatacionsimple, int valorhabitacionMatrimonial, int valorhabitacionFamiliar) {
-    cout << endl << "- TIPOS DE HABITACIONES - ";
-    cout << endl << "1. Habitacion Simple. (Dos camas) DISPONIBLES, PRECIO(" << valorhabiatacionsimple << ") = " << habitacionsimple;
-    cout << endl << "2. Habitacion Matrimonial. (Una cama doble) DISPONIBLES, PRECIO(" << valorhabitacionMatrimonial << ") = " << habitacionmatrimonial;
-    cout << endl << "3. Habitacion Familiar. (Dos literas = cuatro camas) DISPONIBLES, PRECIO(" << valorhabitacionFamiliar << ") = " << habitacionfamiliar;
+    cout << endl << "- HABITACIONES DISPONIBLES - ";
+    cout << endl << "1. Habitacion Simple. (Dos camas)."<<endl<<"PRECIO= $" << valorhabiatacionsimple << endl << " DISPONIBLES = " << habitacionsimple<<endl;
+    cout << endl << "2. Habitacion Matrimonial. (Una cama doble)." << endl << "PRECIO= $" << valorhabitacionMatrimonial << endl << " DISPONIBLES = " << habitacionmatrimonial << endl;
+    cout << endl << "3. Habitacion Familiar. (Dos literas = cuatro camas)." << endl << "PRECIO= $" << valorhabitacionFamiliar << endl << " DISPONIBLES = " << habitacionfamiliar << endl;
     cout << endl << "  " << endl;
 }
 
